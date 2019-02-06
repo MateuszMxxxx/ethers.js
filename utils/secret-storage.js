@@ -11,7 +11,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var aes_js_1 = __importDefault(require("aes-js"));
-var scrypt_js_1 = __importDefault(require("scrypt-js"));
 var uuid_1 = __importDefault(require("uuid"));
 var signing_key_1 = require("./signing-key");
 var HDNode = __importStar(require("./hdnode"));
@@ -95,7 +94,7 @@ function decryptCrowdsale(json, password) {
 }
 exports.decryptCrowdsale = decryptCrowdsale;
 //@TODO: string or arrayish
-function decrypt(json, password, progressCallback) {
+function decrypt(json, password, scriptFunction, progressCallback) {
     var data = JSON.parse(json);
     var passwordBytes = getPassword(password);
     var decrypt = function (key, ciphertext) {
@@ -172,7 +171,7 @@ function decrypt(json, password, progressCallback) {
                 if (progressCallback) {
                     progressCallback(0);
                 }
-                scrypt_js_1.default(passwordBytes, salt, N, r, p, 64, function (error, progress, key) {
+                scriptFunction(passwordBytes, salt, N, r, p, 64, function (error, progress, key) {
                     if (error) {
                         error.progress = progress;
                         reject(error);
@@ -230,7 +229,7 @@ function decrypt(json, password, progressCallback) {
     });
 }
 exports.decrypt = decrypt;
-function encrypt(privateKey, password, options, progressCallback) {
+function encrypt(privateKey, password, scriptFunction, options, progressCallback) {
     // the options are optional, so adjust the call as needed
     if (typeof (options) === 'function' && !progressCallback) {
         progressCallback = options;
@@ -324,7 +323,7 @@ function encrypt(privateKey, password, options, progressCallback) {
         // We take 64 bytes:
         //   - 32 bytes   As normal for the Web3 secret storage (derivedKey, macPrefix)
         //   - 32 bytes   AES key to encrypt mnemonic with (required here to be Ethers Wallet)
-        scrypt_js_1.default(passwordBytes, salt, N, r, p, 64, function (error, progress, key) {
+        scriptFunction(passwordBytes, salt, N, r, p, 64, function (error, progress, key) {
             if (error) {
                 error.progress = progress;
                 reject(error);

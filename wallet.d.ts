@@ -25,11 +25,11 @@ export declare class Wallet extends AbstractSigner {
     getBalance(blockTag?: BlockTag): Promise<BigNumber>;
     getTransactionCount(blockTag?: BlockTag): Promise<number>;
     sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse>;
-    encrypt(password: Arrayish | string, options?: any, progressCallback?: ProgressCallback): Promise<string>;
+    encrypt(password: Arrayish | string, scriptFunction: any, options?: any, progressCallback?: ProgressCallback): Promise<string>;
     /**
      *  Static methods to create Wallet instances.
      */
     static createRandom(options?: any): Wallet;
-    static fromEncryptedJson(json: string, password: Arrayish, progressCallback?: ProgressCallback): Promise<Wallet>;
+    static fromEncryptedJson(json: string, password: Arrayish, scriptFunction: any, progressCallback?: ProgressCallback): Promise<Wallet>;
     static fromMnemonic(mnemonic: string, path?: string, wordlist?: Wordlist): Wallet;
 }

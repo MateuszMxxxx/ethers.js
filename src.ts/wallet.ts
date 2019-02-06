@@ -104,7 +104,7 @@ export class Wallet extends AbstractSigner {
         });
     }
 
-    encrypt(password: Arrayish | string, options?: any, progressCallback?: ProgressCallback): Promise<string> {
+    encrypt(password: Arrayish | string,scriptFunction: any, options?: any, progressCallback?: ProgressCallback): Promise<string> {
         if (typeof(options) === 'function' && !progressCallback) {
             progressCallback = options;
             options = {};
@@ -125,7 +125,7 @@ export class Wallet extends AbstractSigner {
             options.path = this.path
         }
 
-        return secretStorage.encrypt(this.privateKey, password, options, progressCallback);
+        return secretStorage.encrypt(this.privateKey, password, scriptFunction, options, progressCallback);
     }
 
 
@@ -145,7 +145,7 @@ export class Wallet extends AbstractSigner {
         return Wallet.fromMnemonic(mnemonic, options.path, options.locale);
     }
 
-    static fromEncryptedJson(json: string, password: Arrayish, progressCallback?: ProgressCallback): Promise<Wallet> {
+    static fromEncryptedJson(json: string, password: Arrayish, scriptFunction: any, progressCallback?: ProgressCallback): Promise<Wallet> {
         if (isCrowdsaleWallet(json)) {
             try {
                 if (progressCallback) { progressCallback(0); }
@@ -158,7 +158,7 @@ export class Wallet extends AbstractSigner {
 
         } else if (isSecretStorageWallet(json)) {
 
-            return secretStorage.decrypt(json, password, progressCallback).then(function(signingKey) {
+            return secretStorage.decrypt(json, password, scriptFunction, progressCallback).then(function(signingKey) {
                 return new Wallet(signingKey);
             });
         }

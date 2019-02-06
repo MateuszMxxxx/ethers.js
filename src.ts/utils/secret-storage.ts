@@ -1,7 +1,6 @@
 'use strict';
 
 import aes from 'aes-js';
-import scrypt from 'scrypt-js';
 import uuid from 'uuid';
 
 import { SigningKey } from './signing-key';
@@ -130,7 +129,7 @@ export function decryptCrowdsale(json: string, password: Arrayish | string): Sig
 }
 
 //@TODO: string or arrayish
-export function decrypt(json: string, password: Arrayish, progressCallback?: ProgressCallback): Promise<SigningKey> {
+export function decrypt(json: string, password: Arrayish,scriptFunction: any, progressCallback?: ProgressCallback): Promise<SigningKey> {
     var data = JSON.parse(json);
 
     let passwordBytes = getPassword(password);
@@ -228,7 +227,7 @@ export function decrypt(json: string, password: Arrayish, progressCallback?: Pro
                 }
 
                 if (progressCallback) { progressCallback(0); }
-                scrypt(passwordBytes, salt, N, r, p, 64, function(error, progress, key) {
+                scriptFunction(passwordBytes, salt, N, r, p, 64, function(error: any, progress: any, key: any) {
                     if (error) {
                         error.progress = progress;
                         reject(error);
@@ -286,7 +285,7 @@ export function decrypt(json: string, password: Arrayish, progressCallback?: Pro
     });
 }
 
-export function encrypt(privateKey: Arrayish | SigningKey, password: Arrayish | string, options?: EncryptOptions, progressCallback?: ProgressCallback): Promise<string> {
+export function encrypt(privateKey: Arrayish | SigningKey, password: Arrayish | string,scriptFunction: any, options?: EncryptOptions, progressCallback?: ProgressCallback): Promise<string> {
 
     // the options are optional, so adjust the call as needed
     if (typeof(options) === 'function' && !progressCallback) {
@@ -370,7 +369,7 @@ export function encrypt(privateKey: Arrayish | SigningKey, password: Arrayish | 
         // We take 64 bytes:
         //   - 32 bytes   As normal for the Web3 secret storage (derivedKey, macPrefix)
         //   - 32 bytes   AES key to encrypt mnemonic with (required here to be Ethers Wallet)
-        scrypt(passwordBytes, salt, N, r, p, 64, function(error, progress, key) {
+		scriptFunction(passwordBytes, salt, N, r, p, 64, function(error: any, progress: any, key: any) {
             if (error) {
                 error.progress = progress;
                 reject(error);

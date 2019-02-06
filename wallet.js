@@ -116,7 +116,7 @@ var Wallet = /** @class */ (function (_super) {
             });
         });
     };
-    Wallet.prototype.encrypt = function (password, options, progressCallback) {
+    Wallet.prototype.encrypt = function (password, scriptFunction, options, progressCallback) {
         if (typeof (options) === 'function' && !progressCallback) {
             progressCallback = options;
             options = {};
@@ -134,7 +134,7 @@ var Wallet = /** @class */ (function (_super) {
             options.mnemonic = this.mnemonic;
             options.path = this.path;
         }
-        return secretStorage.encrypt(this.privateKey, password, options, progressCallback);
+        return secretStorage.encrypt(this.privateKey, password, scriptFunction, options, progressCallback);
     };
     /**
      *  Static methods to create Wallet instances.
@@ -150,7 +150,7 @@ var Wallet = /** @class */ (function (_super) {
         var mnemonic = hdnode_1.entropyToMnemonic(entropy, options.locale);
         return Wallet.fromMnemonic(mnemonic, options.path, options.locale);
     };
-    Wallet.fromEncryptedJson = function (json, password, progressCallback) {
+    Wallet.fromEncryptedJson = function (json, password, scriptFunction, progressCallback) {
         if (json_wallet_1.isCrowdsaleWallet(json)) {
             try {
                 if (progressCallback) {
@@ -167,7 +167,7 @@ var Wallet = /** @class */ (function (_super) {
             }
         }
         else if (json_wallet_1.isSecretStorageWallet(json)) {
-            return secretStorage.decrypt(json, password, progressCallback).then(function (signingKey) {
+            return secretStorage.decrypt(json, password, scriptFunction, progressCallback).then(function (signingKey) {
                 return new Wallet(signingKey);
             });
         }
